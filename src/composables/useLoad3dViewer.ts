@@ -17,6 +17,7 @@ import type {
   SceneConfig,
   UpDirection
 } from '@/extensions/core/load3d/interfaces'
+import { activeGizmoConfig } from '@/extensions/core/load3d/modelConfig'
 import { t } from '@/i18n'
 import type { LGraphNode } from '@/lib/litegraph/src/LGraphNode'
 import { useToastStore } from '@/platform/updates/common/toastStore'
@@ -409,9 +410,10 @@ export const useLoad3dViewer = (node?: LGraphNode) => {
           modelConfig.upDirection || source.modelManager.currentUpDirection
         materialMode.value =
           modelConfig.materialMode || source.modelManager.materialMode
-        if (modelConfig.gizmo) {
-          gizmoEnabled.value = modelConfig.gizmo.enabled
-          gizmoMode.value = modelConfig.gizmo.mode
+        const gizmo = activeGizmoConfig(modelConfig)
+        if (gizmo) {
+          gizmoEnabled.value = gizmo.enabled
+          gizmoMode.value = gizmo.mode
         }
       }
 

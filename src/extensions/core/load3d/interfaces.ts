@@ -58,7 +58,12 @@ export interface ModelConfig {
   upDirection: UpDirection
   materialMode: MaterialMode
   showSkeleton: boolean
+  /**
+   * @deprecated In-memory working slot / legacy persisted shape. Persisted
+   * state uses `models`; reads migrate `gizmo` into `models`.
+   */
   gizmo?: GizmoConfig
+  models?: GizmoConfig[]
 }
 
 export interface CameraConfig {

@@ -1285,7 +1285,7 @@ describe('useLoad3d', () => {
       expect(mockLoad3d.resetGizmoTransform).toHaveBeenCalled()
     })
 
-    it('should persist gizmo config to node properties via modelConfig watcher', async () => {
+    it('should persist gizmo config to node properties as a models list via modelConfig watcher', async () => {
       const composable = useLoad3d(mockNode)
       const containerRef = document.createElement('div')
 
@@ -1296,10 +1296,12 @@ describe('useLoad3d', () => {
       await nextTick()
 
       const savedConfig = mockNode.properties['Model Config'] as {
-        gizmo: { enabled: boolean; mode: string }
+        gizmo?: unknown
+        models: { enabled: boolean; mode: string }[]
       }
-      expect(savedConfig.gizmo.enabled).toBe(true)
-      expect(savedConfig.gizmo.mode).toBe('rotate')
+      expect(savedConfig.gizmo).toBeUndefined()
+      expect(savedConfig.models[0].enabled).toBe(true)
+      expect(savedConfig.models[0].mode).toBe('rotate')
     })
 
     it('should register gizmoTransformChange event handler', async () => {

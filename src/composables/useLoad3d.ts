@@ -26,6 +26,7 @@ import type {
   SceneConfig,
   UpDirection
 } from '@/extensions/core/load3d/interfaces'
+import { normalizeGizmoModels } from '@/extensions/core/load3d/modelConfig'
 import { t } from '@/i18n'
 import type { LGraphNode } from '@/lib/litegraph/src/LGraphNode'
 import { LiteGraph } from '@/lib/litegraph/src/litegraph'
@@ -247,18 +248,8 @@ export const useLoad3d = (nodeOrRef: MaybeRef<LGraphNode | null>) => {
     if (savedModelConfig) {
       modelConfig.value = {
         ...savedModelConfig,
-        gizmo: savedModelConfig.gizmo
-          ? {
-              ...savedModelConfig.gizmo,
-              scale: savedModelConfig.gizmo.scale ?? { x: 1, y: 1, z: 1 }
-            }
-          : {
-              enabled: false,
-              mode: 'translate',
-              position: { x: 0, y: 0, z: 0 },
-              rotation: { x: 0, y: 0, z: 0 },
-              scale: { x: 1, y: 1, z: 1 }
-            }
+        gizmo: normalizeGizmoModels(savedModelConfig)[0],
+        models: undefined
       }
     }
 
@@ -448,8 +439,12 @@ export const useLoad3d = (nodeOrRef: MaybeRef<LGraphNode | null>) => {
   watch(
     modelConfig,
     (newValue) => {
-      if (nodeRef.value) {
-        nodeRef.value.properties['Model Config'] = newValue
+      if (!nodeRef.value) return
+      nodeRef.value.properties['Model Config'] = {
+        upDirection: newValue.upDirection,
+        materialMode: newValue.materialMode,
+        showSkeleton: newValue.showSkeleton,
+        models: newValue.gizmo ? [newValue.gizmo] : (newValue.models ?? [])
       }
     },
     { deep: true }

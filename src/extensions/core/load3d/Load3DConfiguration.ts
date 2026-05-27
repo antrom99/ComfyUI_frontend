@@ -1,6 +1,10 @@
 import { LOAD3D_NONE_MODEL } from '@/extensions/core/load3d/constants'
 import Load3d from '@/extensions/core/load3d/Load3d'
 import Load3dUtils from '@/extensions/core/load3d/Load3dUtils'
+import {
+  defaultGizmoConfig,
+  normalizeGizmoModels
+} from '@/extensions/core/load3d/modelConfig'
 import type {
   CameraConfig,
   CameraState,
@@ -203,17 +207,8 @@ class Load3DConfiguration {
   private loadModelConfig(): ModelConfig {
     if (this.properties && 'Model Config' in this.properties) {
       const config = this.properties['Model Config'] as ModelConfig
-      if (!config.gizmo) {
-        config.gizmo = {
-          enabled: false,
-          mode: 'translate',
-          position: { x: 0, y: 0, z: 0 },
-          rotation: { x: 0, y: 0, z: 0 },
-          scale: { x: 1, y: 1, z: 1 }
-        }
-      } else if (!config.gizmo.scale) {
-        config.gizmo.scale = { x: 1, y: 1, z: 1 }
-      }
+      config.models = normalizeGizmoModels(config)
+      delete config.gizmo
       return config
     }
 
@@ -221,13 +216,7 @@ class Load3DConfiguration {
       upDirection: 'original',
       materialMode: 'original',
       showSkeleton: false,
-      gizmo: {
-        enabled: false,
-        mode: 'translate',
-        position: { x: 0, y: 0, z: 0 },
-        rotation: { x: 0, y: 0, z: 0 },
-        scale: { x: 1, y: 1, z: 1 }
-      }
+      models: [defaultGizmoConfig()]
     }
   }
 

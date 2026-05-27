@@ -84,24 +84,24 @@ describe('Load3DConfiguration.loadModelConfig', () => {
     vi.restoreAllMocks()
   })
 
-  it('returns full defaults including gizmo when no properties are provided', () => {
+  it('returns full defaults including a single-object models list when no properties are provided', () => {
     const result = createConfig().loadModelConfig()
 
     expect(result).toEqual({
       upDirection: 'original',
       materialMode: 'original',
       showSkeleton: false,
-      gizmo: defaultGizmo
+      models: [defaultGizmo]
     })
   })
 
   it('returns full defaults when properties do not contain Model Config', () => {
     const result = createConfig({ 'Other Key': 'x' }).loadModelConfig()
 
-    expect(result.gizmo).toEqual(defaultGizmo)
+    expect(result.models).toEqual([defaultGizmo])
   })
 
-  it('adds default gizmo when Model Config exists but has no gizmo field', () => {
+  it('adds a default models entry when Model Config exists but has no transform', () => {
     const stored: ModelConfig = {
       upDirection: '+y',
       materialMode: 'wireframe',
@@ -116,10 +116,10 @@ describe('Load3DConfiguration.loadModelConfig', () => {
     expect(result.upDirection).toBe('+y')
     expect(result.materialMode).toBe('wireframe')
     expect(result.showSkeleton).toBe(true)
-    expect(result.gizmo).toEqual(defaultGizmo)
+    expect(result.models).toEqual([defaultGizmo])
   })
 
-  it('mutates the original Model Config property to persist gizmo defaults', () => {
+  it('mutates the original Model Config property to persist the models list', () => {
     const stored: ModelConfig = {
       upDirection: 'original',
       materialMode: 'original',
@@ -131,12 +131,12 @@ describe('Load3DConfiguration.loadModelConfig', () => {
 
     createConfig(properties).loadModelConfig()
 
-    expect((properties['Model Config'] as ModelConfig).gizmo).toEqual(
+    expect((properties['Model Config'] as ModelConfig).models).toEqual([
       defaultGizmo
-    )
+    ])
   })
 
-  it('backfills scale on legacy gizmo config missing the scale field', () => {
+  it('migrates a legacy gizmo field into models and removes it', () => {
     const legacyGizmo = {
       enabled: true,
       mode: 'rotate',
@@ -155,16 +155,19 @@ describe('Load3DConfiguration.loadModelConfig', () => {
 
     const result = createConfig(properties).loadModelConfig()
 
-    expect(result.gizmo).toEqual({
-      enabled: true,
-      mode: 'rotate',
-      position: { x: 1, y: 2, z: 3 },
-      rotation: { x: 0.1, y: 0.2, z: 0.3 },
-      scale: { x: 1, y: 1, z: 1 }
-    })
+    expect(result.gizmo).toBeUndefined()
+    expect(result.models).toEqual([
+      {
+        enabled: true,
+        mode: 'rotate',
+        position: { x: 1, y: 2, z: 3 },
+        rotation: { x: 0.1, y: 0.2, z: 0.3 },
+        scale: { x: 1, y: 1, z: 1 }
+      }
+    ])
   })
 
-  it('preserves a fully populated gizmo config unchanged', () => {
+  it('preserves a fully populated models entry unchanged', () => {
     const fullGizmo: GizmoConfig = {
       enabled: true,
       mode: 'scale',
@@ -176,7 +179,7 @@ describe('Load3DConfiguration.loadModelConfig', () => {
       upDirection: '-z',
       materialMode: 'normal',
       showSkeleton: false,
-      gizmo: fullGizmo
+      models: [fullGizmo]
     }
     const properties = { 'Model Config': stored } as Dictionary<
       NodeProperty | undefined
@@ -184,7 +187,7 @@ describe('Load3DConfiguration.loadModelConfig', () => {
 
     const result = createConfig(properties).loadModelConfig()
 
-    expect(result.gizmo).toEqual(fullGizmo)
+    expect(result.models).toEqual([fullGizmo])
   })
 })
 
