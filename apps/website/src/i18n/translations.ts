@@ -4235,6 +4235,17 @@ const translations = {
   'payment.failed.secondaryCta': {
     en: 'READ SUBSCRIPTION DOCS',
     'zh-CN': '查看订阅文档'
+  },
+
+  // AffiliateHeroSection
+  'affiliate.hero.label': { en: 'AFFILIATE PROGRAM', 'zh-CN': '联盟计划' },
+  'affiliate.hero.heading': {
+    en: 'Earn with Comfy',
+    'zh-CN': '与 Comfy 一起赚钱'
+  },
+  'affiliate.hero.body': {
+    en: 'Share Comfy with your audience and earn a commission on every customer you refer.',
+    'zh-CN': '与您的受众分享 Comfy，并从您推荐的每位客户中赚取佣金。'
   }
 } as const satisfies Record<string, Record<Locale, string>>
 
