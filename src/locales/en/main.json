@@ -3775,7 +3775,6 @@
       }
     },
     "runtimeErrors": {
-      "noCreditsCharged": "No credits charged.",
       "execution_failed": {
         "title": "Execution failed",
         "message": "Node threw an error during execution.",
